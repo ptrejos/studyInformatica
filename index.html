@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Autoevaluación · Informática Básica y TI</title>
+<meta name="description" content="Pon a prueba tu conocimiento del curso Informática Básica y Tecnología de la Información con tests de 10, 20, 40 o 150 preguntas.">
+<meta name="theme-color" content="#0B1F4B">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Autoevaluación">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar__inner">
+    <div class="brand">
+      <img class="brand__logo" src="icons/emblema.png" alt="" width="44" height="44">
+      <div>
+        <p class="brand__title">Autoevaluación</p>
+        <p class="brand__sub">Informática Básica y Tecnología de la Información</p>
+      </div>
+    </div>
+    <p class="brand__inst">SAR · 2026</p>
+    <button class="btn btn--install" id="btn-install" type="button" hidden>⬇ Instalar app</button>
+  </div>
+</header>
+
+<main id="app" class="container" tabindex="-1">
+
+  <!-- INICIO -->
+  <section id="screen-home" class="screen" aria-labelledby="home-title">
+    <div class="hero">
+      <img class="hero__emblem" src="icons/emblema.png" alt="Emblema institucional" width="120" height="120">
+      <div>
+        <h1 id="home-title">Mide lo que sabes</h1>
+        <p>Responde preguntas de las. Después de cada respuesta sabrás si acertaste y, si fallaste, cuál era la alternativa correcta.</p>
+      </div>
+    </div>
+
+    <h2 class="section-title">1. Elige el orden de las preguntas</h2>
+    <div id="test-order" class="order"></div>
+    <p class="note" id="seq-note"></p>
+
+    <h2 class="section-title">2. Elige la extensión de tu test</h2>
+    <div class="size-grid" id="size-grid" role="group" aria-label="Cantidad de preguntas"></div>
+
+    <details class="filters" id="filters">
+      <summary>Personalizar (opcional): nivel y semana</summary>
+      <div class="filters__body" id="test-filters"></div>
+    </details>
+
+    <div id="retry-box" class="retry" hidden>
+      <div>
+        <h2 class="section-title">Repasa tus errores</h2>
+        <p class="note" id="retry-text"></p>
+      </div>
+      <button class="btn btn--secondary" id="btn-retry" type="button">Repasar errores</button>
+    </div>
+
+    <ul class="facts" aria-label="Datos del banco de preguntas">
+      <li><strong>150</strong> preguntas</li>
+      <li><strong>4</strong> alternativas (a–d)</li>
+      <li><strong>3</strong> niveles</li>
+      <li>Funciona <strong>sin conexión</strong></li>
+    </ul>
+    <p class="note">El test se arma al azar manteniendo la proporción del banco: 50 % fáciles, 30 % intermedias y 20 % difíciles.</p>
+  </section>
+
+  <!-- ESTUDIAR -->
+  <section id="screen-study" class="screen" hidden aria-labelledby="study-title">
+    <div id="study-setup">
+      <div class="page-head">
+        <h1 id="study-title" class="page-title">Estudiar</h1>
+        <p class="page-sub">Repasa las preguntas con su respuesta, sin puntaje. Marca las que ya dominas.</p>
+      </div>
+      <h2 class="section-title">Orden de estudio</h2>
+      <div id="study-order" class="order"></div>
+      <p class="note" id="study-seq-note"></p>
+      <h2 class="section-title" style="margin-top:18px">Qué quieres estudiar</h2>
+      <div class="card filters__body" id="study-filters"></div>
+      <div class="actions actions--row">
+        <button class="btn btn--primary" id="btn-study-start" type="button">Comenzar a estudiar</button>
+        <button class="btn btn--ghost" id="btn-study-reset" type="button">Empezar desde el principio</button>
+      </div>
+    </div>
+
+    <div id="study-card" hidden>
+      <div class="quiz-head">
+        <p class="quiz-count" id="study-count" aria-live="polite"></p>
+        <p class="quiz-score" id="study-known"></p>
+        <button class="btn btn--ghost btn--small" id="btn-study-exit" type="button">Cambiar</button>
+      </div>
+      <div class="progress" aria-hidden="true"><span id="study-bar"></span></div>
+      <article class="card question">
+        <div class="tags">
+          <span class="tag tag--level" id="s-level"></span>
+          <span class="tag" id="s-week"></span>
+          <span class="tag tag--n" id="s-id"></span>
+        </div>
+        <h2 class="question__text" id="s-text" tabindex="-1"></h2>
+        <div class="options" id="s-options" role="group" aria-labelledby="s-text"></div>
+        <div class="feedback feedback--ok" id="s-answer" role="status" aria-live="polite" hidden></div>
+        <div class="actions actions--row study-actions">
+          <button class="btn btn--secondary" id="btn-s-show" type="button">Mostrar respuesta</button>
+          <button class="btn btn--toggle" id="btn-s-known" type="button" aria-pressed="false">☆ Ya la domino</button>
+        </div>
+        <div class="study-nav">
+          <button class="btn btn--ghost" id="btn-s-prev" type="button">← Anterior</button>
+          <button class="btn btn--primary" id="btn-s-next" type="button">Siguiente →</button>
+        </div>
+        <p class="hint">Atajos: <kbd>←</kbd> <kbd>→</kbd> para moverte y <kbd>Espacio</kbd> para mostrar la respuesta.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- PROGRESO -->
+  <section id="screen-progress" class="screen" hidden aria-labelledby="prog-title">
+    <div class="page-head">
+      <h1 id="prog-title" class="page-title">Tu progreso</h1>
+      <p class="page-sub">Se guarda solo en este dispositivo.</p>
+    </div>
+    <div id="prog-empty" class="empty" hidden>Aún no tienes actividad. Haz un test en <b>Inicio</b> o marca preguntas como dominadas en <b>Estudiar</b>.</div>
+    <div id="prog-body">
+      <div class="kpis" id="kpis"></div>
+      <section class="card prog-card">
+        <h2 class="section-title">Dominio del banco</h2>
+        <div class="mastery">
+          <div class="mastery__bar" role="progressbar" aria-label="Preguntas dominadas" id="mastery-bar" aria-valuemin="0" aria-valuemax="150"><span id="mastery-fill"></span></div>
+          <p id="mastery-txt" class="note"></p>
+        </div>
+      </section>
+      <section class="card prog-card">
+        <h2 class="section-title">Aciertos por nivel</h2>
+        <div class="level-breakdown" id="p-levels"></div>
+      </section>
+      <section class="card prog-card">
+        <h2 class="section-title">Aciertos por semana</h2>
+        <div class="weeks" id="p-weeks"></div>
+        <p class="note legend">Toca una semana para estudiarla. <span class="dot dot--good"></span> ≥ 70 % <span class="dot dot--mid"></span> 50–69 % <span class="dot dot--low"></span> &lt; 50 % <span class="dot dot--none"></span> sin datos</p>
+      </section>
+      <section class="card prog-card">
+        <div class="history__head">
+          <h2 class="section-title">Últimos tests</h2>
+        </div>
+        <ul id="history-list" class="history__list"></ul>
+        <div class="actions actions--row">
+          <button class="btn btn--secondary" id="btn-p-retry" type="button">Repasar errores</button>
+          <button class="btn btn--ghost" id="btn-clear" type="button">Borrar mi progreso</button>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <!-- TEST -->
+  <section id="screen-quiz" class="screen" hidden aria-label="Test en curso">
+    <div class="quiz-head">
+      <p class="quiz-count" id="quiz-count" aria-live="polite"></p>
+      <p class="quiz-score" id="quiz-score"></p>
+      <button class="btn btn--ghost btn--small" id="btn-exit" type="button">Salir</button>
+    </div>
+    <div class="progress" role="progressbar" aria-label="Avance del test" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress"><span id="progress-bar"></span></div>
+
+    <article class="card question">
+      <div class="tags">
+        <span class="tag tag--level" id="q-level"></span>
+        <span class="tag" id="q-week"></span>
+      </div>
+      <h2 class="question__text" id="q-text" tabindex="-1"></h2>
+      <div class="options" id="q-options" role="group" aria-labelledby="q-text"></div>
+      <div class="feedback" id="feedback" role="status" aria-live="polite" hidden></div>
+      <div class="actions">
+        <button class="btn btn--primary" id="btn-next" type="button" hidden></button>
+      </div>
+      <p class="hint">Atajos: teclas <kbd>A</kbd>–<kbd>D</kbd> (o <kbd>1</kbd>–<kbd>4</kbd>) para responder y <kbd>Enter</kbd> para continuar.</p>
+    </article>
+  </section>
+
+  <!-- RESULTADOS -->
+  <section id="screen-result" class="screen" hidden aria-labelledby="result-title">
+    <div class="card result">
+      <h1 id="result-title" tabindex="-1">Resultado del test</h1>
+      <div class="result__grid">
+        <div class="ring" id="ring" role="img" aria-label=""><span id="ring-text"></span></div>
+        <ul class="stats">
+          <li class="stat stat--ok"><span class="stat__num" id="r-ok">0</span><span class="stat__lbl">Correctas</span></li>
+          <li class="stat stat--bad"><span class="stat__num" id="r-bad">0</span><span class="stat__lbl">Incorrectas</span></li>
+          <li class="stat"><span class="stat__num" id="r-total">0</span><span class="stat__lbl">Total</span></li>
+        </ul>
+      </div>
+      <p class="result__msg" id="r-msg"></p>
+      <div class="level-breakdown" id="r-levels"></div>
+      <div class="actions actions--row">
+        <button class="btn btn--primary" id="btn-again" type="button">Repetir con otras preguntas</button>
+        <button class="btn btn--secondary" id="btn-home" type="button">Elegir otro test</button>
+      </div>
+    </div>
+
+    <section aria-labelledby="review-title" class="review">
+      <div class="review__head">
+        <h2 id="review-title" class="section-title">Revisión de tus respuestas</h2>
+        <div class="seg" role="group" aria-label="Filtro de la revisión">
+          <button type="button" class="seg__btn is-on" data-filter="bad" aria-pressed="true">Solo incorrectas</button>
+          <button type="button" class="seg__btn" data-filter="all" aria-pressed="false">Todas</button>
+        </div>
+      </div>
+      <ol class="review__list" id="review-list"></ol>
+    </section>
+  </section>
+</main>
+
+<footer class="footer">
+  <p>Material de estudio · PATS</p>
+</footer>
+
+
+<nav class="tabbar" id="tabbar" aria-label="Secciones">
+  <button class="tab is-on" type="button" data-tab="home" aria-current="page">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span>Inicio</span></button>
+  <button class="tab" type="button" data-tab="study">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM6 5v11.1A4 4 0 0 1 7 16h10V5z"/></svg><span>Estudiar</span></button>
+  <button class="tab" type="button" data-tab="progress">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10h4v10zm6 0V4h4v16zm6 0v-7h4v7z"/></svg><span>Progreso</span></button>
+</nav>
+
+<script src="questions.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
